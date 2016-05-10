@@ -21,6 +21,15 @@ module API
           end
         end
 
+        desc "Creates a new post"
+        params do
+          requires :title, type: String, desc: 'Post title'
+          requires :content, type: String, desc: 'Post content'
+        end
+        post do
+          Post.create(title: params[:title], content: params[:content])
+        end
+
       end
 
     end
