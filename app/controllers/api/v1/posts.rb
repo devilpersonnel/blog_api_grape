@@ -45,6 +45,16 @@ module API
           end
         end
 
+        desc "Deletes a post"
+        params do
+          requires :id, type: Integer, desc: 'Post id'
+        end
+        delete ':id' do
+          post = Post.where( id: params[:id] ).last
+          post.destroy
+          { success: 'Post was successfully deleted' }
+        end
+
       end
 
     end
