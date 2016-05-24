@@ -25,6 +25,17 @@ module API
           { post: post.as_json(only: [:id, :title]).merge(comment: post.comments.find(params[:id]).as_json(only: [:id, :commenter, :text])) }
         end
 
+        desc "Returns a created comment for a post"
+        params do
+          requires :post_id, type: Integer, desc: "Post id"
+          requires :commenter, type: String, desc: "Name of commenter"
+          requires :text, type: String, desc: "Text in comment"
+        end
+        post ':post_id/comments' do
+          article = Post.find( params[:post_id] )
+          article.comments.create(commenter: params[:commenter], text: params[:text])
+        end
+
       end
     end
   end
