@@ -36,6 +36,20 @@ module API
           article.comments.create(commenter: params[:commenter], text: params[:text])
         end
 
+        desc "Updates and returns a specific comment"
+        params do
+          requires :post_id, type: Integer, desc: "Post_id"
+        end
+        put ':post_id/comments/:id' do
+          post = Post.find(params[:post_id])
+          comment = post.comments.where(id: params[:id]).last
+          if comment.update( commenter: params[:commenter], text: params[:text])
+            comment
+          else
+            { error: comment.errors.full_messages.to_sentence }
+          end
+        end
+
       end
     end
   end
