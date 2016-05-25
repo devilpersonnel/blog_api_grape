@@ -51,6 +51,18 @@ module API
           end
         end
 
+        desc "Deletes a comment for a post"
+        params do
+          requires :post_id, type: Integer, desc: "Post id"
+          requires :id, type: Integer, desc: "Comment id"
+        end
+        delete ':post_id/comments/:id' do
+          post = Post.find(params[:post_id])
+          comment = post.comments.where(id: params[:id]).last
+          comment.destroy
+          { success: 'Comment was successfully deleted' }
+        end
+
       end
     end
   end
