@@ -11,7 +11,8 @@ module API
           requires :post_id, type: Integer, desc: 'Post id'
         end
         get ':post_id/comments' do
-          post = Post.find( params[:post_id] )
+          post = Post.where(id: params[:post_id]).last
+          return { error: 'Post was not found' } unless post.present?
           { post: post.as_json(only: [:id, :title]).merge(comments: post.comments.as_json(only: [:id, :commenter, :text])) }
         end
 
@@ -21,8 +22,11 @@ module API
           requires :id, type: Integer, desc: "Comment id"
         end
         get ':post_id/comments/:id' do
-          post = Post.find( params[:post_id] )
-          { post: post.as_json(only: [:id, :title]).merge(comment: post.comments.find(params[:id]).as_json(only: [:id, :commenter, :text])) }
+          post = Post.where(id: params[:post_id]).last
+          return { error: 'Post was not found' } unless post.present?
+          comment = post.comments.where(id: params[:id]).last
+          return { error: 'Comment was not found' } unless comment.present?
+          { post: post.as_json(only: [:id, :title]).merge(comment: comment.as_json(only: [:id, :commenter, :text])) }
         end
 
         desc "Returns a created comment for a post"
@@ -32,7 +36,8 @@ module API
           requires :text, type: String, desc: "Text in comment"
         end
         post ':post_id/comments' do
-          article = Post.find( params[:post_id] )
+          article = Post.where(id: params[:post_id]).last
+          return { error: 'Post was not found' } unless article.present?
           article.comments.create(commenter: params[:commenter], text: params[:text])
         end
 
@@ -42,8 +47,10 @@ module API
           requires :id, type: Integer, desc: "Comment ID"
         end
         put ':post_id/comments/:id' do
-          post = Post.find(params[:post_id])
+          post = Post.where(id: params[:post_id]).last
+          return { error: 'Post was not found' } unless post.present?
           comment = post.comments.where(id: params[:id]).last
+          return { error: 'Comment was not found' } unless comment.present?
           if comment.update( commenter: params[:commenter], text: params[:text])
             comment
           else
@@ -57,8 +64,11 @@ module API
           requires :id, type: Integer, desc: "Comment id"
         end
         delete ':post_id/comments/:id' do
-          post = Post.find(params[:post_id])
+          post = Post.where(id: params[:post_id]).last
+          return { error: 'Post was not found' } unless post.present?
+          debugger
           comment = post.comments.where(id: params[:id]).last
+          return { error: 'Comment was not found' } unless comment.present?
           comment.destroy
           { success: 'Comment was successfully deleted' }
         end
