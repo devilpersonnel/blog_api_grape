@@ -17,7 +17,9 @@ module API
         end
         route_param :id do
           get do
-            Post.find( params[:id] )
+            post = Post.where(id: params[:id]).last
+            return { error: 'Post was not found' } unless post.present?
+            post
           end
         end
 
@@ -37,7 +39,8 @@ module API
           requires :content, type: String, desc: 'Post Content'
         end
         put ':id' do
-          post = Post.where( id: params[:id] ).last
+          post = Post.where(id: params[:id]).last
+          return { error: 'Post was not found' } unless post.present?
           if post.update({ title: params[:title], content: params[:content] })
             post
           else
@@ -50,7 +53,8 @@ module API
           requires :id, type: Integer, desc: 'Post id'
         end
         delete ':id' do
-          post = Post.where( id: params[:id] ).last
+          post = Post.where(id: params[:id]).last
+          return { error: 'Post was not found' } unless post.present?
           post.destroy
           { success: 'Post was successfully deleted' }
         end
