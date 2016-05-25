@@ -39,6 +39,7 @@ module API
         desc "Updates and returns a specific comment"
         params do
           requires :post_id, type: Integer, desc: "Post_id"
+          requires :id, type: Integer, desc: "Comment ID"
         end
         put ':post_id/comments/:id' do
           post = Post.find(params[:post_id])
